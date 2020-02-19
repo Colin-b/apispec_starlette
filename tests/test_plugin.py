@@ -33,7 +33,7 @@ def test_with_exception_handlers_in_app_without_status_code_but_yaml_docstring()
                 example: This is a description of the error.
         type: object
         """
-        pass
+        pass  # pragma: no cover
 
     app = Starlette(exception_handlers={HTTPException: handle_exception})
     spec = APISpec(
@@ -62,7 +62,7 @@ def test_with_exception_handlers_in_app_with_status_code_in_yaml_docstring():
                     example: This is a description of the error.
             type: object
         """
-        pass
+        pass  # pragma: no cover
 
     app = Starlette(exception_handlers={HTTPException: handle_exception})
     spec = APISpec(
@@ -104,7 +104,7 @@ def test_with_exception_handlers_in_app_with_status_code_in_handler_and_yaml_doc
                 example: This is a description of the error.
         type: object
         """
-        pass
+        pass  # pragma: no cover
 
     app = Starlette(exception_handlers={400: handle_exception})
     spec = APISpec(
@@ -136,7 +136,7 @@ def test_with_exception_handlers_in_app_with_status_code_in_handler_and_yaml_doc
 
 def test_with_exception_handlers_in_app_with_status_code_in_handler_but_without_yaml_docstring():
     async def handle_exception(request: Request, exc: HTTPException):
-        pass
+        pass  # pragma: no cover
 
     app = Starlette(exception_handlers={400: handle_exception})
     spec = APISpec(
@@ -168,11 +168,11 @@ def test_path_operations():
 
     @app.route("/test")
     def test_endpoint(request):
-        pass
+        pass  # pragma: no cover
 
     @app.route("/test_without_response")
     def test_endpoint_without_response(request):
-        pass
+        pass  # pragma: no cover
 
     @app.route("/test_overriden")
     def test_endpoint_with_overriden_response(request):
@@ -181,7 +181,7 @@ def test_path_operations():
             200:
                 description: "non ok"
         """
-        pass
+        pass  # pragma: no cover
 
     for endpoint in plugin.endpoints():
         spec.path(endpoint.path, endpoint=endpoint)
@@ -219,7 +219,7 @@ def test_path_summary():
     @app.route("/test")
     def test_endpoint(request):
         """This is the expected summary"""
-        pass
+        pass  # pragma: no cover
 
     @app.route("/test_with_doc")
     def test_endpoint_with_doc(request):
@@ -230,7 +230,7 @@ def test_path_summary():
             200:
                 description: "ok"
         """
-        pass
+        pass  # pragma: no cover
 
     for endpoint in plugin.endpoints():
         spec.path(endpoint.path, endpoint=endpoint)
