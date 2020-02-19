@@ -72,8 +72,22 @@ def test_with_exception_handlers_in_app_with_status_code_in_yaml_docstring():
         plugins=[StarlettePlugin(app)],
     )
     assert spec.to_dict() == {
+        "definitions": {
+            "Error400": {
+                "properties": {
+                    "message": {
+                        "description": "Description " "of " "the " "error.",
+                        "example": "This is a " "description " "of the " "error.",
+                        "type": "string",
+                    }
+                },
+                "required": ["message"],
+                "type": "object",
+            }
+        },
         "info": {"title": "Test API", "version": "0.0.1"},
         "paths": {},
+        "responses": {400: {"schema": {"$ref": "#/definitions/Error400"}}},
         "swagger": "2.0",
     }
 
@@ -100,8 +114,22 @@ def test_with_exception_handlers_in_app_with_status_code_in_handler_and_yaml_doc
         plugins=[StarlettePlugin(app)],
     )
     assert spec.to_dict() == {
+        "definitions": {
+            "Error400": {
+                "properties": {
+                    "message": {
+                        "description": "Description " "of " "the " "error.",
+                        "example": "This is a " "description " "of the " "error.",
+                        "type": "string",
+                    }
+                },
+                "required": ["message"],
+                "type": "object",
+            }
+        },
         "info": {"title": "Test API", "version": "0.0.1"},
         "paths": {},
+        "responses": {400: {"schema": {"$ref": "#/definitions/Error400"}}},
         "swagger": "2.0",
     }
 
