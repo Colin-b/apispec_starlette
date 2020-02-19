@@ -89,3 +89,17 @@ def test_swagger_json_endpoint_parameters():
         },
         "swagger": "2.0",
     }
+
+
+def test_swagger_json_endpoint_with_x_forwarded_prefix_header():
+    app = Starlette()
+    add_swagger_json_endpoint(app)
+
+    client = TestClient(app)
+    response = client.get("/swagger.json", headers={"X-Forwarded-Prefix": "/test"})
+    assert response.json() == {
+        "info": {"title": "My API", "version": "0.0.1"},
+        "basePath": "/test",
+        "paths": {},
+        "swagger": "2.0",
+    }

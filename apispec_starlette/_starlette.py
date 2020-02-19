@@ -1,6 +1,7 @@
 from apispec import APISpec
 from starlette.applications import Starlette
-from starlette.responses import JSONResponse
+from starlette.requests import Request
+from starlette.responses import JSONResponse, Response
 
 from apispec_starlette._plugin import StarlettePlugin
 
@@ -35,9 +36,13 @@ def add_swagger_json_endpoint(
     )
 
     @app.route("/swagger.json", include_in_schema=False)
-    def schema(request):
+    def schema(request: Request) -> Response:
         for endpoint in plugin.endpoints():
             spec.path(path=endpoint.path, endpoint=endpoint)
+
+        if "X-Forwarded-Prefix" in request.headers:
+            spec.options.setdefault("basePath", request.headers["X-Forwarded-Prefix"])
+
         return JSONResponse(spec.to_dict())
 
     return spec
