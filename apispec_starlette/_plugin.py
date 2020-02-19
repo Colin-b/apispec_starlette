@@ -1,5 +1,6 @@
 from typing import List, Callable, Optional, Union, Type
 
+import yaml
 from apispec import BasePlugin, APISpec
 from starlette.applications import Starlette
 from starlette.schemas import BaseSchemaGenerator, EndpointInfo
@@ -103,12 +104,7 @@ class StarlettePlugin(BasePlugin):
         # the docstring.
         docstring = docstring.split("---")[0]
 
-        try:
-            import yaml
-
-            parsed = yaml.safe_load(docstring)
-        except ImportError:
-            parsed = docstring
+        parsed = yaml.safe_load(docstring)
 
         if isinstance(parsed, dict):
             return
