@@ -42,6 +42,8 @@ setup(
         "starlette==0.13.*",
         # Used to manage OpenAPI definition
         "apispec>=3.3.*,<=4.*",
+        # Used to parse docstring
+        "pyyaml==5.*",
     ],
     extras_require={
         "testing": [
