@@ -54,6 +54,8 @@ class StarlettePlugin(BasePlugin):
                     {"schema": {"$ref": f"#/definitions/Error{status_code}"}},
                 )
 
+        # TODO Document securityDefinitions based on the AuthenticationMiddleware
+
     def endpoints(self) -> List[EndpointInfo]:
         return self.generator.get_endpoints(self.app.routes)
 
@@ -83,6 +85,8 @@ class StarlettePlugin(BasePlugin):
         summary = self._summary(endpoint.func)
         if summary:
             default_operation["summary"] = summary
+
+        # TODO document security based on @requires
 
         # Allow to override auto generated documentation
         default_operation.update(self.generator.parse_docstring(endpoint.func))
