@@ -3,7 +3,7 @@ from starlette.applications import Starlette
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 
-from apispec_starlette import StarlettePlugin
+from apispec_starlette import StarlettePlugin, document_endpoint_oauth2_authentication
 
 
 def test_without_exception_handlers_in_app():
@@ -204,6 +204,70 @@ def test_path_operations():
             "/test_without_response": {
                 "get": {"operationId": "get_test_endpoint_without_response"}
             },
+        },
+        "swagger": "2.0",
+    }
+
+
+def test_path_mixed_operations():
+    app = Starlette()
+    plugin = StarlettePlugin(app)
+    spec = APISpec(
+        title="Test API", version="0.0.1", openapi_version="2.0", plugins=[plugin]
+    )
+    document_endpoint_oauth2_authentication(
+        spec,
+        endpoint="/test",
+        method="get",
+        required_scopes=["scope1", "scope2"],
+        unauthorized_status_code=400,
+        forbidden_status_code=402,
+    )
+
+    @app.route("/test")
+    def endpoint():
+        """
+        responses:
+            200:
+                description: ok
+                type: string
+        """
+        pass  # pragma: no cover
+
+    for endpoint in plugin.endpoints():
+        spec.path(endpoint.path, endpoint=endpoint)
+
+    assert spec.to_dict() == {
+        "info": {"title": "Test API", "version": "0.0.1"},
+        "paths": {
+            "/test": {
+                "get": {
+                    "operationId": "get_endpoint",
+                    "responses": {
+                        "200": {"description": "ok", "type": "string"},
+                        "400": {
+                            "description": "No "
+                            "permission "
+                            "-- "
+                            "see "
+                            "authorization "
+                            "schemes",
+                            "schema": {"type": "string"},
+                        },
+                        "402": {
+                            "description": "Request "
+                            "forbidden "
+                            "-- "
+                            "authorization "
+                            "will "
+                            "not "
+                            "help",
+                            "schema": {"type": "string"},
+                        },
+                    },
+                    "security": [{"oauth2": ["scope1", "scope2"]}],
+                }
+            }
         },
         "swagger": "2.0",
     }
