@@ -5,7 +5,7 @@
 <a href="https://travis-ci.com/Colin-b/apispec_starlette"><img alt="Build status" src="https://api.travis-ci.com/Colin-b/apispec_starlette.svg?branch=master"></a>
 <a href="https://travis-ci.com/Colin-b/apispec_starlette"><img alt="Coverage" src="https://img.shields.io/badge/coverage-100%25-brightgreen"></a>
 <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-<a href="https://travis-ci.com/Colin-b/apispec_starlette"><img alt="Number of tests" src="https://img.shields.io/badge/tests-11 passed-blue"></a>
+<a href="https://travis-ci.com/Colin-b/apispec_starlette"><img alt="Number of tests" src="https://img.shields.io/badge/tests-15 passed-blue"></a>
 <a href="https://pypi.org/project/apispec-starlette/"><img alt="Number of downloads" src="https://img.shields.io/pypi/dm/apispec-starlette"></a>
 </p>
 
@@ -95,6 +95,39 @@ document_response(spec, endpoint="/my_endpoint", method="get", status_code=200, 
         "type": "object",
     }
 })
+```
+
+### Documenting OAuth2 security outside of endpoint docstring
+
+```python
+from starlette.applications import Starlette
+from starlette.middleware import Middleware
+from starlette.middleware.authentication import AuthenticationMiddleware
+from starlette.authentication import requires, AuthenticationBackend
+from starlette.responses import JSONResponse
+from apispec import APISpec
+from apispec_starlette import StarlettePlugin, document_endpoint_oauth2_authentication, document_oauth2_authentication
+
+
+# TODO Replace by your OAuth2 backend
+app = Starlette(middleware=[Middleware(AuthenticationMiddleware, backend=AuthenticationBackend())])
+spec = APISpec(
+    title="My API",
+    version="0.0.1",
+    openapi_version="2.0",
+    plugins=[StarlettePlugin(app)],
+)
+
+# TODO Adjust parameters
+document_oauth2_authentication(spec, authorization_url="http://authorization_url", flow="implicit", scopes={"scope1": "Description of scope 1", "scope2": "Description of scope 2"})
+
+@requires(scopes=["scope1", "scope2"])
+@app.route("/my_endpoint")
+def my_endpoint():
+    return JSONResponse({"status": "test"})
+
+
+document_endpoint_oauth2_authentication(spec, endpoint="/my_endpoint", method="get", required_scopes=["scope1", "scope2"])
 ```
 
 ## Add a /swagger.json endpoint

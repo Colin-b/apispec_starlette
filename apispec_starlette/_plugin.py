@@ -39,6 +39,7 @@ class StarlettePlugin(BasePlugin):
 
     def init_spec(self, spec: APISpec):
         # TODO Document error 500
+
         # Document all responses that can occur in case of an error
         for status_code_or_exception, handler in self.app.exception_handlers.items():
             handler_component = self.generator.parse_docstring(handler)
@@ -72,8 +73,8 @@ class StarlettePlugin(BasePlugin):
                 for method, operation in operations.items():
                     previous_operation = self.operations.setdefault(
                         path, {}
-                    ).setdefault(method, operation)
-                    previous_operation.update(operation)
+                    ).setdefault(method, {})
+                    merge_dict(previous_operation, operation)
             return
 
         default_operation = {
@@ -87,8 +88,9 @@ class StarlettePlugin(BasePlugin):
         # Allow to override auto generated documentation
         default_operation.update(self.generator.parse_docstring(endpoint.func))
         operations[endpoint.http_method] = default_operation
-        operations[endpoint.http_method].update(
-            self.operations.get(path, {}).get(endpoint.http_method.lower(), {})
+        merge_dict(
+            default_operation,
+            self.operations.get(path, {}).get(endpoint.http_method.lower(), {}),
         )
 
     def _summary(self, func_or_method: Callable) -> Optional[str]:
@@ -110,3 +112,10 @@ class StarlettePlugin(BasePlugin):
             return
 
         return parsed
+
+
+def merge_dict(previous: dict, new: dict):
+    for previous_key, previous_value in previous.items():
+        if isinstance(previous_value, dict):
+            previous_value.update(new.pop(previous_key, {}))
+    previous.update(new)
