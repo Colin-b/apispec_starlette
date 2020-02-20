@@ -121,8 +121,8 @@ spec = APISpec(
 # TODO Adjust parameters
 document_oauth2_authentication(spec, authorization_url="http://authorization_url", flow="implicit", scopes={"scope1": "Description of scope 1", "scope2": "Description of scope 2"})
 
-@requires(scopes=["scope1", "scope2"])
 @app.route("/my_endpoint")
+@requires(scopes=["scope1", "scope2"])
 def my_endpoint():
     return JSONResponse({"status": "test"})
 
