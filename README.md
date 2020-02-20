@@ -51,7 +51,7 @@ spec = APISpec(
 
 
 @app.route("/my_endpoint")
-def my_endpoint():
+def my_endpoint(request):
     """
     responses:
         200:
@@ -84,7 +84,7 @@ spec = APISpec(
 
 
 @app.route("/my_endpoint")
-def my_endpoint():
+def my_endpoint(request):
     return JSONResponse({"status": "test"})
 
 
@@ -123,7 +123,7 @@ document_oauth2_authentication(spec, authorization_url="http://authorization_url
 
 @app.route("/my_endpoint")
 @requires(scopes=["scope1", "scope2"])
-def my_endpoint():
+def my_endpoint(request):
     return JSONResponse({"status": "test"})
 
 
